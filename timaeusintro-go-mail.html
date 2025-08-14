@@ -3,51 +3,65 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>選擇寄信方式</title>
-  <meta name="description" content="手動選擇：優先 Gmail App，其次 Gmail 網頁版，最後 mailto 預設郵件 App。" />
+  <title>開啟 Gmail 撰寫</title>
+  <meta name="description" content="先自動嘗試 Gmail App，若未成功，再由使用者手動選擇 Gmail 網頁版或預設郵件 App。" />
   <style>
     :root { --pad: 16px; }
     html, body { height: 100%; }
-    body { display: grid; place-items: center; margin: 0; font-family: system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans TC',Arial,sans-serif; background: #f7f7f8; color: #111; }
-    .card { width: min(680px, 92%); background: #fff; border-radius: 16px; padding: calc(var(--pad) * 1.25); box-shadow: 0 6px 24px rgba(0,0,0,.08); }
+    body { margin: 0; background: #f7f7f8; color: #111;
+           font-family: system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans TC',Arial,sans-serif; }
+    .wrap { min-height: 100%; display: grid; place-items: center; padding: 24px; }
+    .card { width: min(720px, 94%); background: #fff; border-radius: 16px; padding: 22px;
+            box-shadow: 0 6px 24px rgba(0,0,0,.08); }
     h1 { font-size: 20px; margin: 0 0 8px; }
     p { margin: 8px 0; color: #444; }
-    .btn { display: block; text-align: center; padding: 14px 16px; margin: 14px 0; border-radius: 12px; text-decoration: none; font-weight: 600; }
+    .btn { display: block; text-align: center; padding: 14px 16px; margin: 12px 0;
+           border-radius: 12px; text-decoration: none; font-weight: 600; }
     .primary { background: #1a73e8; color: #fff; }
     .secondary { background: #eef3fe; color: #174ea6; }
     .ghost { background: #f1f3f4; color: #222; }
     .small { font-size: 13px; color: #666; }
-    .warn { background: #fff8e1; border-left: 4px solid #f6c343; padding: 8px 12px; border-radius: 8px; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>選擇寄信方式</h1>
-    <p>請點下方按鈕。先試 Gmail App，若未成功改用 Gmail 網頁版。</p>
+  <div class="wrap">
+    <div class="card">
+      <div id="auto">
+        <h1>正在嘗試開啟 Gmail App…</h1>
+        <p class="small">若 1–2 秒內沒有跳出撰寫視窗，下面會提供手動選項。</p>
+      </div>
 
-    <a id="openApp" class="btn primary" href="#">用 Gmail App 寄信（建議）</a>
-    <a id="openWeb" class="btn secondary" href="#">改用 Gmail 網頁版</a>
-    <a id="openMailto" class="btn ghost" href="#">用預設郵件 App（備用）</a>
+      <div id="manual" style="display:none">
+        <h1>選擇寄信方式</h1>
+        <p>先建議使用 Gmail App；若未成功，請改用 Gmail 網頁版。</p>
 
-    <p class="small">若你是在 <b>LINE/FB/IG 內建瀏覽器</b>看到本頁，App 連結可能被阻擋。請點右上角選單，選 <b>在瀏覽器開啟</b> 後再試。</p>
-    <div class="warn small">提示：此頁採「手動選擇」，<b>不會自動跳轉</b>，避免系統自動選錯（如直接觸發 mailto）。</div>
+        <a id="tryApp" class="btn primary" href="#">重新嘗試 Gmail App（建議）</a>
+        <a id="openWeb" class="btn secondary" href="#">改用 Gmail 網頁版</a>
+        <a id="openMailto" class="btn ghost" href="#">用預設郵件 App（備用）</a>
+
+        <p class="small">若你是在 <b>LINE/FB/IG 內建瀏覽器</b>看到本頁，App 連結可能被阻擋；
+          請以右上角選單選 <b>在瀏覽器開啟</b> 後再試。</p>
+      </div>
+    </div>
   </div>
 
   <script>
     (function () {
-      // ===== 可調整區 =====
+      // ===== 可調整區（收件人／主旨／內文）=====
       var to = 'timaeusfamily@gmail.com';
-      var subject = encodeURIComponent('寄信給宗親會');
-      var body = encodeURIComponent('寄信給宗親會');
-      // ====================
+      var subject = encodeURIComponent('來寄信給宗親會');
+      var body = encodeURIComponent('燈箱很漂亮');
+      // =========================================
 
-      // iOS 舊/新 scheme 都嘗試
-      var appUrlIOS1 = 'googlegmail://co?to=' + to + '&subject=' + subject + '&body=' + body;
-      var appUrlIOS2 = 'gmail://co?to=' + to + '&subject=' + subject + '&body=' + body;
+      // iOS：同時準備舊/新 scheme
+      var appUrlIOS_New = 'gmail://co?to=' + to + '&subject=' + subject + '&body=' + body;
+      var appUrlIOS_Old = 'googlegmail://co?to=' + to + '&subject=' + subject + '&body=' + body;
 
-      // Android：一般 scheme 與 intent 皆備
+      // Android：一般 scheme 與 Chrome 的 intent
       var appUrlAndroid = 'googlegmail://co?to=' + to + '&subject=' + subject + '&body=' + body;
-      var appUrlAndroidIntent = 'intent://co?to=' + to + '&subject=' + subject + '&body=' + body + '#Intent;scheme=googlegmail;package=com.google.android.gm;end';
+      var appUrlAndroidIntent =
+        'intent://co?to=' + to + '&subject=' + subject + '&body=' + body +
+        '#Intent;scheme=googlegmail;package=com.google.android.gm;end';
 
       var webUrl = 'https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=' + to + '&su=' + subject + '&body=' + body;
       var mailtoUrl = 'mailto:' + to + '?subject=' + subject + '&body=' + body;
@@ -56,28 +70,37 @@
       var isiOS = /iPad|iPhone|iPod/.test(ua);
       var isAndroid = /Android/i.test(ua);
 
-      // 綁定按鈕
-      var $openApp = document.getElementById('openApp');
-      var $openWeb = document.getElementById('openWeb');
-      var $openMailto = document.getElementById('openMailto');
-
-      $openWeb.href = webUrl;
-      $openMailto.href = mailtoUrl;
-
-      $openApp.addEventListener('click', function (e) {
-        e.preventDefault();
+      function openGmailApp() {
         if (isiOS) {
-          // 先試新 scheme，再退舊 scheme
-          window.location.href = appUrlIOS2;
-          setTimeout(function () { window.location.href = appUrlIOS1; }, 150);
+          // 先新 scheme，再舊 scheme，以提升命中率
+          window.location.href = appUrlIOS_New;
+          setTimeout(function () { window.location.href = appUrlIOS_Old; }, 180);
         } else if (isAndroid) {
-          // 先一般 scheme，失敗再用 intent（Chrome 支援）
+          // 多數瀏覽器支援一般 scheme；Chrome 支援 intent
           window.location.href = appUrlAndroid;
-          setTimeout(function () { window.location.href = appUrlAndroidIntent; }, 180);
+          setTimeout(function () { window.location.href = appUrlAndroidIntent; }, 220);
         } else {
-          // 桌機：直接走網頁版
+          // 桌機直接改用網頁版
           window.location.href = webUrl;
         }
+      }
+
+      // 初次自動嘗試 App
+      openGmailApp();
+
+      // 1.2 秒後顯示手動選項（不自動跳 web 或 mailto）
+      setTimeout(function () {
+        document.getElementById('auto').style.display = 'none';
+        var manual = document.getElementById('manual');
+        manual.style.display = 'block';
+        document.getElementById('openWeb').href = webUrl;
+        document.getElementById('openMailto').href = mailtoUrl;
+      }, 1200);
+
+      // 手動按鈕
+      document.getElementById('tryApp').addEventListener('click', function (e) {
+        e.preventDefault();
+        openGmailApp();
       });
     })();
   </script>
