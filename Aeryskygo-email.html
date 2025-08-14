@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>開啟 Gmail 撰寫</title>
+  <script>
+    (function () {
+      var to = 'timaeusfamily@gmail.com';
+      var subject = encodeURIComponent('來寄信給宗親會');
+      var body = encodeURIComponent('燈箱很漂亮');
+
+      var appUrl = 'googlegmail://co?to=' + to + '&subject=' + subject + '&body=' + body;
+      var webUrl = 'https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=' + to + '&su=' + subject + '&body=' + body;
+      var mailtoUrl = 'mailto:' + to + '?subject=' + subject + '&body=' + body;
+
+      // 先嘗試 Gmail App
+      var triedApp = false;
+      function tryApp() {
+        triedApp = true;
+        window.location.href = appUrl;
+      }
+
+      // 若 app 開不起來，800ms 後退到 Gmail 網頁
+      var webFallback = setTimeout(function () {
+        window.location.href = webUrl;
+      }, 800);
+
+      // 若網頁也不行，再過 2 秒退到 mailto
+      var mailtoFallback = setTimeout(function () {
+        window.location.href = mailtoUrl;
+      }, 2000);
+
+      // 立刻嘗試
+      tryApp();
+
+      // 保險：使用者可點擊手動開啟
+      window.onload = function () {
+        document.getElementById('openWeb').href = webUrl;
+        document.getElementById('openMailto').href = mailtoUrl;
+      };
+    })();
+  </script>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", Arial, sans-serif; line-height: 1.6; padding: 24px; }
+    a { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <p>正在為你開啟 Gmail 撰寫視窗…</p>
+  <p>若未自動跳轉，請點：
+    <a id="openWeb" href="#">用 Gmail 網頁版</a> ｜ 
+    <a id="openMailto" href="#">用預設郵件 App</a>
+  </p>
+</body>
+</html>
